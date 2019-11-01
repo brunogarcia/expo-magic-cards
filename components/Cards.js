@@ -14,7 +14,10 @@ const { API } = constants;
 export default class Cards extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { isLoading: true };
+    this.state = {
+      cards: [],
+      isLoading: true
+    };
   }
 
   componentDidMount() {
@@ -28,11 +31,11 @@ export default class Cards extends React.Component {
   async fetchCards() {
     return fetch(`${API}cards?page=0&pageSize=5&contains=imageUrl`)
     .then(response => response.json())
-    .then(responseJson => {
+    .then(response => {
       this.setState(
         {
           isLoading: false,
-          dataSource: this.mapCards(responseJson.cards),
+          cards: this.mapCards(response.cards),
         },
         function() {}
       );
@@ -64,6 +67,7 @@ export default class Cards extends React.Component {
   mapCards(cards) {
     return cards.map(card => {
       const {
+        id,
         name,
         colors,
         type,
@@ -72,6 +76,7 @@ export default class Cards extends React.Component {
       } = card;
 
       return {
+        id,
         name,
         data: [
           {
@@ -99,8 +104,8 @@ export default class Cards extends React.Component {
         <SectionList
           renderItem={({ item }) => <CardDetail item={item} />}
           renderSectionHeader={({ section: { name } }) => <CardHeader name={name} />}
-          sections={this.state.dataSource}
-          keyExtractor={(item, index) => item + index}
+          sections={this.state.cards}
+          keyExtractor={({ id }) => id}
         />
       </View>
     );
