@@ -1,11 +1,10 @@
 import constants from '../utils/constants';
 import React from 'react';
 import {
+  View,
   StyleSheet,
   SectionList,
   ActivityIndicator,
-  Text,
-  View,
 } from 'react-native';
 import CardHeader from './CardHeader';
 import CardDetail from './CardDetail';
@@ -44,12 +43,12 @@ export default class Cards extends React.Component {
   }
 
   /**
-   * Get colors
+   * Get color
    * 
    * @param {Array<string>} colors
    * @returns {string} The color value to lowercase
    */
-  getColors(colors) {
+  getColor(colors) {
     if (colors.length > 0) {
       const [color] = colors;
       return color.toLowerCase();
@@ -76,7 +75,7 @@ export default class Cards extends React.Component {
         name,
         data: [
           {
-            colors: this.getColors(colors),
+            color: this.getColor(colors),
             type,
             setName,
             imageUrl,
@@ -98,7 +97,7 @@ export default class Cards extends React.Component {
     return (
       <View style={styles.container}>
         <SectionList
-          renderItem={({ item, index }) => <CardDetail item={item} index={index} />}
+          renderItem={({ item }) => <CardDetail item={item} />}
           renderSectionHeader={({ section: { name } }) => <CardHeader name={name} />}
           sections={this.state.dataSource}
           keyExtractor={(item, index) => item + index}
