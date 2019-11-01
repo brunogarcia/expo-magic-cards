@@ -21,11 +21,11 @@ export default class CardDetail extends React.Component {
     this.state = { isVisible: false };
   }
 
-  onPressItem = () => {
+  handleShowOverlay = () => {
     this.setState({ isVisible: true });
   };
 
-  closeOverlay = () => {
+  handleHideOverlay = () => {
     this.setState({ isVisible: false });
   };
 
@@ -35,7 +35,7 @@ export default class CardDetail extends React.Component {
 
     return (
       <TouchableOpacity
-        onPress={this.onPressItem}
+        onPress={this.handleShowOverlay}
       >
         <View style={styles.container}>
           { 
@@ -49,7 +49,7 @@ export default class CardDetail extends React.Component {
             isVisible && (
               <Overlay
                 isVisible
-                onBackdropPress={this.closeOverlay}
+                onBackdropPress={this.handleHideOverlay}
               >
                 <View>
                   <Image
@@ -60,7 +60,7 @@ export default class CardDetail extends React.Component {
                   <Button
                     title="Close"
                     type="outline"
-                    onPress={this.closeOverlay}
+                    onPress={this.handleHideOverlay}
                   />
                 </View>
               </Overlay>
