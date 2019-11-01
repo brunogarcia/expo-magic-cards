@@ -8,6 +8,8 @@ import {
   View,
 } from 'react-native';
 
+import { Divider } from 'react-native-elements';
+
 const { API } = constants;
 
 export default class Cards extends React.Component {
@@ -94,6 +96,7 @@ export default class Cards extends React.Component {
               <View style={[styles.itemColor, { backgroundColor: item.colors }]} />
               <Text key={item.type + index}>{item.type}</Text>
               <Text key={item.setName + index}>{item.setName}</Text>
+              <Divider style={styles.itemDivider} />
             </View>
           }
           renderSectionHeader={({ section: { name } }) => (
@@ -110,11 +113,11 @@ export default class Cards extends React.Component {
 const styles = StyleSheet.create({
   activityIndicator: {
     flex: 1,
-    padding: 50,
+    padding: 20,
   },
   container: {
     flex: 1,
-    padding: 50,
+    padding: 20,
   },
   itemHeader: {
     fontWeight: 'bold',
@@ -125,5 +128,8 @@ const styles = StyleSheet.create({
   itemColor: {
     width: 10,
     height: 10,
-  }
+  },
+  itemDivider: {
+    marginTop: 20,
+  },
 });

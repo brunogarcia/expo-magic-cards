@@ -1,20 +1,14 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
 import Cards from './Cards';
+import { Header, ThemeProvider } from 'react-native-elements';
 
 export default function App() {
   return (
-    <View style={styles.container}>
+    <ThemeProvider>
+      <Header
+        centerComponent={{ text: 'Magic Cards', style: { color: '#fff' } }}
+      />
       <Cards />
-    </View>
+    </ThemeProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
