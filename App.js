@@ -1,5 +1,5 @@
 import React from 'react';
-import Cards from './Cards';
+import Cards from './components/Cards';
 import { Header, ThemeProvider } from 'react-native-elements';
 
 export default function App() {

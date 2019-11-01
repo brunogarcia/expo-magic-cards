@@ -1,4 +1,4 @@
-import constants from './constants';
+import constants from '../utils/constants';
 import React from 'react';
 import {
   StyleSheet,
@@ -7,8 +7,8 @@ import {
   Text,
   View,
 } from 'react-native';
-
-import { Divider } from 'react-native-elements';
+import CardHeader from './CardHeader';
+import CardDetail from './CardDetail';
 
 const { API } = constants;
 
@@ -64,7 +64,13 @@ export default class Cards extends React.Component {
    */
   mapCards(cards) {
     return cards.map(card => {
-      const { name , colors, type, setName } = card;
+      const {
+        name,
+        colors,
+        type,
+        setName,
+        imageUrl,
+      } = card;
 
       return {
         name,
@@ -73,6 +79,7 @@ export default class Cards extends React.Component {
             colors: this.getColors(colors),
             type,
             setName,
+            imageUrl,
           }
         ],
       };
@@ -91,17 +98,8 @@ export default class Cards extends React.Component {
     return (
       <View style={styles.container}>
         <SectionList
-          renderItem={({ item, index }) =>
-            <View style={styles.itemData}>
-              <View style={[styles.itemColor, { backgroundColor: item.colors }]} />
-              <Text key={item.type + index}>{item.type}</Text>
-              <Text key={item.setName + index}>{item.setName}</Text>
-              <Divider style={styles.itemDivider} />
-            </View>
-          }
-          renderSectionHeader={({ section: { name } }) => (
-            <Text style={styles.itemHeader}>{name}</Text>
-          )}
+          renderItem={({ item, index }) => <CardDetail item={item} index={index} />}
+          renderSectionHeader={({ section: { name } }) => <CardHeader name={name} />}
           sections={this.state.dataSource}
           keyExtractor={(item, index) => item + index}
         />
@@ -118,18 +116,5 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-  },
-  itemHeader: {
-    fontWeight: 'bold',
-  },
-  itemData: {
-    paddingBottom: 20,
-  },
-  itemColor: {
-    width: 10,
-    height: 10,
-  },
-  itemDivider: {
-    marginTop: 20,
   },
 });
