@@ -2,7 +2,7 @@
 
 A simple UI for listing a set of cards with Expo.io
 
-# Data
+## Data
 
 [Magic The Gathering API](https://docs.magicthegathering.io/)
 
