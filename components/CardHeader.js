@@ -1,17 +1,18 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {
-  StyleSheet,
-  Text,
-} from 'react-native';
-
-import { Divider } from 'react-native-elements';
+import { StyleSheet } from 'react-native';
+import { Text } from 'react-native-elements';
 
 export default function CardHeader(props) {
   const { name } = props;
 
   return (
-    <Text style={styles.itemHeader}>{name}</Text>
+    <Text
+      h4
+      style={styles.itemHeader}
+    >
+      {name}
+    </Text>
   );
 }
 

@@ -1,11 +1,19 @@
 import constants from '../utils/constants';
 import React from 'react';
 import {
+  Text,
   View,
   StyleSheet,
   SectionList,
   ActivityIndicator,
 } from 'react-native';
+
+import {
+  Image,
+  Button,
+  Overlay,
+} from 'react-native-elements';
+
 import CardHeader from './CardHeader';
 import CardDetail from './CardDetail';
 
@@ -20,6 +28,8 @@ export default class Cards extends React.Component {
       cards: [],
       isLoading: true,
       isRefreshing: false,
+      isOverlayVisible: false,
+      overlayImageUrl: '',
     };
   }
 
@@ -53,6 +63,25 @@ export default class Cards extends React.Component {
     });
   }
 
+  handleShowOverlay = (imageUrl) => {
+    console.log(imageUrl);
+    
+    this.setState({
+      overlayImageUrl: imageUrl,
+      isOverlayVisible: true
+    });
+  };
+
+  handleHideOverlay = () => {
+    this.setState({
+      overlayImageUrl: '',
+      isOverlayVisible: false
+    });
+  };
+
+  /**
+   * Fetch more cards
+   */
   fetchMoreCards = () => {
      if (this.state.refreshing){
       return null;
@@ -129,7 +158,15 @@ export default class Cards extends React.Component {
   };
 
   render() {
-    if (this.state.isLoading) {
+    const {
+      cards,
+      isLoading,
+      isRefreshing,
+      isOverlayVisible,
+      overlayImageUrl,
+    } = this.state;
+
+    if (isLoading) {
       return (
         <View style={styles.activityIndicator}>
           <ActivityIndicator />
@@ -140,15 +177,40 @@ export default class Cards extends React.Component {
     return (
       <View style={styles.container}>
         <SectionList
-          renderItem={({ item }) => <CardDetail item={item} />}
+          renderItem={({ item }) => <CardDetail item={item} handleShowOverlay={this.handleShowOverlay} />}
           renderSectionHeader={({ section: { name } }) => <CardHeader name={name} />}
           ListFooterComponent={this.renderListFooter}
-          sections={this.state.cards}
+          sections={cards}
           keyExtractor={({ id }) => id}
           onEndReached={this.fetchMoreCards}
           onEndReachedThreshold={0.1}
-          refreshing={this.state.isRefreshing}
+          refreshing={isRefreshing}
         />
+        {
+          isOverlayVisible && (
+            <Overlay
+              isVisible={isOverlayVisible}
+              onBackdropPress={this.handleHideOverlay}
+            >
+              <View>
+                {
+                  overlayImageUrl ?
+                  <Image
+                    source={{ uri: overlayImageUrl }}
+                    style={styles.image}
+                    PlaceholderContent={<ActivityIndicator />} />
+                  :
+                  <Text>No image</Text>
+                }
+                <Button
+                  title="Close"
+                  type="outline"
+                  onPress={this.handleHideOverlay}
+                />
+              </View>
+            </Overlay>
+          )
+        }
       </View>
     );
   }
@@ -162,5 +224,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+  },
+  image: {
+    width: 220,
+    height: 310,
+    marginBottom: 20,
   },
 });
