@@ -52,11 +52,15 @@ export default class CardDetail extends React.Component {
                 onBackdropPress={this.handleHideOverlay}
               >
                 <View>
-                  <Image
-                    source={{ uri: item.imageUrl }}
-                    style={styles.image}
-                    PlaceholderContent={<ActivityIndicator />}
-                  />
+                  {
+                    item.imageUrl ?
+                    <Image
+                      source={{ uri: item.imageUrl }}
+                      style={styles.image}
+                      PlaceholderContent={<ActivityIndicator />} />
+                    :
+                    <Text>No image</Text>
+                  }
                   <Button
                     title="Close"
                     type="outline"
@@ -77,7 +81,7 @@ CardDetail.propTypes = {
     color: PropTypes.string,
     type: PropTypes.string.isRequired,
     setName: PropTypes.string.isRequired,
-    imageUrl: PropTypes.string.isRequired,
+    imageUrl: PropTypes.string,
   }).isRequired,
 };
 

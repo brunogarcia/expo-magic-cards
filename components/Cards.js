@@ -15,8 +15,11 @@ export default class Cards extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      page: 1,
+      pageSize: 5,
       cards: [],
-      isLoading: true
+      isLoading: true,
+      isRefreshing: false,
     };
   }
 
@@ -29,20 +32,43 @@ export default class Cards extends React.Component {
    * save them into the component state
    */
   async fetchCards() {
-    return fetch(`${API}cards?page=0&pageSize=5&contains=imageUrl`)
+    const { page, pageSize } = this.state;
+
+    return fetch(`${API}cards?page=${page}&pageSize=${pageSize}&contains=imageUrl`)
     .then(response => response.json())
+    .then(response => this.mapCards(response.cards))
     .then(response => {
       this.setState(
-        {
-          isLoading: false,
-          cards: this.mapCards(response.cards),
-        },
-        function() {}
+        (prevState) => {
+          return {
+            isLoading: false,
+            isRefreshing: false,
+            cards: [...prevState.cards, ...response],
+          }
+        }
       );
     })
     .catch(error => {
       console.error(error);
     });
+  }
+
+  fetchMoreCards = () => {
+     if (this.state.refreshing){
+      return null;
+    }
+    
+    this.setState(
+      (prevState) => {
+        return {
+          isRefreshing: true,
+          page: prevState.page + 1,
+        };
+      },
+      () => {
+        this.fetchCards();
+      }
+    );
   }
 
   /**
@@ -90,6 +116,18 @@ export default class Cards extends React.Component {
     });
   }
 
+  renderListFooter = () => {
+    if (this.state.isRefreshing) {
+      return (
+        <View>
+          <ActivityIndicator />
+        </View>
+      );
+    }
+
+    return null;
+  };
+
   render() {
     if (this.state.isLoading) {
       return (
@@ -104,8 +142,12 @@ export default class Cards extends React.Component {
         <SectionList
           renderItem={({ item }) => <CardDetail item={item} />}
           renderSectionHeader={({ section: { name } }) => <CardHeader name={name} />}
+          ListFooterComponent={this.renderListFooter}
           sections={this.state.cards}
           keyExtractor={({ id }) => id}
+          onEndReached={this.fetchMoreCards}
+          onEndReachedThreshold={0.1}
+          refreshing={this.state.isRefreshing}
         />
       </View>
     );
