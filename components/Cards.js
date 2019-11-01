@@ -57,15 +57,19 @@ export default class Cards extends React.Component {
     });
   }
 
+  /**
+   * Show overlay
+   */
   handleShowOverlay = (imageUrl) => {
-    console.log(imageUrl);
-    
     this.setState({
       overlayImageUrl: imageUrl,
       isOverlayVisible: true
     });
   };
 
+  /**
+   * Hide overlay
+   */
   handleHideOverlay = () => {
     this.setState({
       overlayImageUrl: '',
@@ -95,12 +99,12 @@ export default class Cards extends React.Component {
   }
 
   /**
-   * Get color
+   * Get card color
    * 
    * @param {Array<string>} colors
    * @returns {string} The color value to lowercase
    */
-  getColor(colors) {
+  getCardColor(colors) {
     if (colors.length > 0) {
       const [color] = colors;
       return color.toLowerCase();
@@ -129,7 +133,7 @@ export default class Cards extends React.Component {
         name,
         data: [
           {
-            color: this.getColor(colors),
+            color: this.getCardColor(colors),
             type,
             setName,
             imageUrl,
@@ -140,7 +144,9 @@ export default class Cards extends React.Component {
   }
 
   renderListFooter = () => {
-    if (this.state.isRefreshing) {
+    const { isRefreshing } = this.state;
+
+    if (isRefreshing) {
       return (
         <View>
           <ActivityIndicator />
