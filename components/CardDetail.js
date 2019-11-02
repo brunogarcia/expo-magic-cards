@@ -1,4 +1,5 @@
 import React from 'react';
+import { Divider } from 'react-native-elements';
 import PropTypes from 'prop-types';
 import {
   Text,
@@ -7,12 +8,22 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
-import {
-  Divider,
-} from 'react-native-elements';
 
 export default function CardDetail(props) {
   const { item, handleShowOverlay } = props;
+
+  const styles = StyleSheet.create({
+    container: {
+      paddingBottom: 20,
+    },
+    color: {
+      width: 10,
+      height: 10,
+    },
+    divider: {
+      marginTop: 20,
+    },
+  });
 
   function onPressCard() {
     handleShowOverlay(item.imageUrl);
@@ -21,9 +32,9 @@ export default function CardDetail(props) {
   return (
     <TouchableOpacity onPress={onPressCard}>
       <View style={styles.container}>
-        { 
-          item.color &&
-          <View style={[styles.color, { backgroundColor: item.color }]} />
+        {
+          item.color
+          && <View style={[styles.color, { backgroundColor: item.color }]} />
         }
         <Text key={item.type}>{item.type}</Text>
         <Text key={item.setName}>{item.setName}</Text>
@@ -42,16 +53,3 @@ CardDetail.propTypes = {
     imageUrl: PropTypes.string,
   }).isRequired,
 };
-
-const styles = StyleSheet.create({
-  container: {
-    paddingBottom: 20,
-  },
-  color: {
-    width: 10,
-    height: 10,
-  },
-  divider: {
-    marginTop: 20,
-  },
-});

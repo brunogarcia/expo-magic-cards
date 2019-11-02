@@ -16,20 +16,30 @@ import {
 export default function CardOverlay(props) {
   const { imageUrl, handleHideOverlay } = props;
 
+  const styles = StyleSheet.create({
+    image: {
+      width: 220,
+      height: 310,
+      marginBottom: 20,
+    },
+  });
+
   return (
     <Overlay
-    isVisible
-    onBackdropPress={handleHideOverlay}
+      isVisible
+      onBackdropPress={handleHideOverlay}
     >
       <View>
         {
-          imageUrl ?
-          <Image
-            style={styles.image}
-            source={{ uri: imageUrl }}
-            PlaceholderContent={<ActivityIndicator />} />
-          :
-          <Text>No image</Text>
+          imageUrl
+            ? (
+              <Image
+                style={styles.image}
+                source={{ uri: imageUrl }}
+                PlaceholderContent={<ActivityIndicator />}
+              />
+            )
+            : <Text>No image</Text>
         }
         <Button
           title="Close"
@@ -45,11 +55,3 @@ CardOverlay.propTypes = {
   imageUrl: PropTypes.string.isRequired,
   handleHideOverlay: PropTypes.func.isRequired,
 };
-
-const styles = StyleSheet.create({
-  image: {
-    width: 220,
-    height: 310,
-    marginBottom: 20,
-  },
-});

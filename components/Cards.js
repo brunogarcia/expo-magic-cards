@@ -1,19 +1,27 @@
-import constants from '../utils/constants';
-import React from 'react';
+import React, { Component } from 'react';
+import { Text } from 'react-native-elements';
 import {
   View,
   StyleSheet,
   SectionList,
-  ActivityIndicator,
 } from 'react-native';
 
 import CardHeader from './CardHeader';
 import CardDetail from './CardDetail';
 import CardOverlay from './CardOverlay';
+import mapCards from '../utils/mapCards';
+import constants from '../utils/constants';
 
 const { API } = constants;
 
-export default class Cards extends React.Component {
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+  },
+});
+
+export default class Cards extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -32,29 +40,25 @@ export default class Cards extends React.Component {
   }
 
   /**
-   * Get the cards from the Magic API and
-   * save them into the component state
+   * Fetch more cards
    */
-  async fetchCards() {
-    const { page, pageSize } = this.state;
+  fetchMoreCards = () => {
+    const { refreshing } = this.state;
+    if (refreshing) {
+      return null;
+    }
 
-    return fetch(`${API}cards?page=${page}&pageSize=${pageSize}&contains=imageUrl`)
-    .then(response => response.json())
-    .then(response => this.mapCards(response.cards))
-    .then(response => {
-      this.setState(
-        (prevState) => {
-          return {
-            isLoading: false,
-            isRefreshing: false,
-            cards: [...prevState.cards, ...response],
-          }
-        }
-      );
-    })
-    .catch(error => {
-      console.error(error);
-    });
+    this.setState(
+      (prevState) => ({
+        isRefreshing: true,
+        page: prevState.page + 1,
+      }),
+      () => {
+        this.fetchCards();
+      },
+    );
+
+    return false;
   }
 
   /**
@@ -63,9 +67,9 @@ export default class Cards extends React.Component {
   handleShowOverlay = (imageUrl) => {
     this.setState({
       overlayImageUrl: imageUrl,
-      isOverlayVisible: true
+      isOverlayVisible: true,
     });
-  };
+  }
 
   /**
    * Hide overlay
@@ -73,89 +77,36 @@ export default class Cards extends React.Component {
   handleHideOverlay = () => {
     this.setState({
       overlayImageUrl: '',
-      isOverlayVisible: false
-    });
-  };
-
-  /**
-   * Fetch more cards
-   */
-  fetchMoreCards = () => {
-     if (this.state.refreshing){
-      return null;
-    }
-    
-    this.setState(
-      (prevState) => {
-        return {
-          isRefreshing: true,
-          page: prevState.page + 1,
-        };
-      },
-      () => {
-        this.fetchCards();
-      }
-    );
-  }
-
-  /**
-   * Get card color
-   * 
-   * @param {Array<string>} colors
-   * @returns {string} The color value to lowercase
-   */
-  getCardColor(colors) {
-    if (colors.length > 0) {
-      const [color] = colors;
-      return color.toLowerCase();
-    }
-  }
-
-  /**
-   * Map cards
-   * 
-   * @param {Array<object>} cards - The card list
-   * @returns {Array<object>} The cards mapped
-   */
-  mapCards(cards) {
-    return cards.map(card => {
-      const {
-        id,
-        name,
-        colors,
-        type,
-        setName,
-        imageUrl,
-      } = card;
-
-      return {
-        id,
-        name,
-        data: [
-          {
-            color: this.getCardColor(colors),
-            type,
-            setName,
-            imageUrl,
-          }
-        ],
-      };
+      isOverlayVisible: false,
     });
   }
 
-  renderListFooter = () => {
-    const { isRefreshing } = this.state;
-
-    if (isRefreshing) {
-      return (
-        <View>
-          <ActivityIndicator />
-        </View>
-      );
-    }
-
-    return null;
-  };
+  /**
+   * Get the cards from the Magic API and
+   * save them into the component state
+   *
+   * @async
+   */
+  async fetchCards() {
+    const { page, pageSize } = this.state;
+    return fetch(`${API}cards?page=${page}&pageSize=${pageSize}&contains=imageUrl`)
+      .then((response) => response.json())
+      .then((response) => mapCards(response.cards))
+      .then((response) => {
+        this.setState(
+          (prevState) => ({
+            isLoading: false,
+            isRefreshing: false,
+            cards: [...prevState.cards, ...response],
+          }),
+        );
+      })
+      .catch((error) => {
+        // TODO: send the error to Sentry
+        // eslint-disable-next-line
+        console.log(error);
+      });
+  }
 
   render() {
     const {
@@ -166,42 +117,31 @@ export default class Cards extends React.Component {
       overlayImageUrl,
     } = this.state;
 
-    if (isLoading) {
-      return (
-        <View style={styles.activityIndicator}>
-          <ActivityIndicator />
-        </View>
-      );
-    }
-
     return (
-      <View style={styles.container}>
-        <SectionList
-          renderItem={({ item }) => <CardDetail item={item} handleShowOverlay={this.handleShowOverlay} />}
-          renderSectionHeader={({ section: { name } }) => <CardHeader name={name} />}
-          ListFooterComponent={this.renderListFooter}
-          sections={cards}
-          keyExtractor={({ id }) => id}
-          onEndReached={this.fetchMoreCards}
-          onEndReachedThreshold={0.1}
-          refreshing={isRefreshing}
-        />
-        {
-          isOverlayVisible &&
-          <CardOverlay imageUrl={overlayImageUrl} handleHideOverlay={this.handleHideOverlay} />
-        }
-      </View>
+      isLoading
+        ? (
+          <View style={styles.container}>
+            <Text>Loading...</Text>
+          </View>
+        )
+        : (
+          <View style={styles.container}>
+            <SectionList
+              renderItem={({ item }) => <CardDetail item={item} handleShowOverlay={this.handleShowOverlay} />}
+              renderSectionHeader={({ section: { name } }) => <CardHeader name={name} />}
+              ListFooterComponent={<Text>Loading...</Text>}
+              sections={cards}
+              keyExtractor={({ id }) => id}
+              onEndReached={this.fetchMoreCards}
+              onEndReachedThreshold={0.1}
+              refreshing={isRefreshing}
+            />
+            {
+              isOverlayVisible
+              && <CardOverlay imageUrl={overlayImageUrl} handleHideOverlay={this.handleHideOverlay} />
+            }
+          </View>
+        )
     );
   }
 }
-
-const styles = StyleSheet.create({
-  activityIndicator: {
-    flex: 1,
-    padding: 20,
-  },
-  container: {
-    flex: 1,
-    padding: 20,
-  },
-});

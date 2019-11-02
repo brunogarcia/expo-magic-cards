@@ -6,6 +6,12 @@ import { Text } from 'react-native-elements';
 export default function CardHeader(props) {
   const { name } = props;
 
+  const styles = StyleSheet.create({
+    itemHeader: {
+      fontWeight: 'bold',
+    },
+  });
+
   return (
     <Text
       h4
@@ -19,9 +25,3 @@ export default function CardHeader(props) {
 CardHeader.propTypes = {
   name: PropTypes.string.isRequired,
 };
-
-const styles = StyleSheet.create({
-  itemHeader: {
-    fontWeight: 'bold',
-  },
-});
