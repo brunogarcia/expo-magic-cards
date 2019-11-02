@@ -14,12 +14,12 @@ import {
 export default function CardDetail(props) {
   const { item, handleShowOverlay } = props;
 
-  onPressCard = () => {
+  function onPressCard() {
     handleShowOverlay(item.imageUrl);
   }
 
   return (
-    <TouchableOpacity onPress={this.onPressCard}>
+    <TouchableOpacity onPress={onPressCard}>
       <View style={styles.container}>
         { 
           item.color &&
