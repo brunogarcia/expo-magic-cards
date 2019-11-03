@@ -82,30 +82,37 @@ export default class Cards extends Component {
   }
 
   /**
-   * Get the cards from the Magic API and
-   * save them into the component state
+   * Get the cards from the Magic API
    *
    * @async
    */
   async fetchCards() {
     const { page, pageSize } = this.state;
-    return fetch(`${API}cards?page=${page}&pageSize=${pageSize}&contains=imageUrl`)
-      .then((response) => response.json())
-      .then((response) => mapCards(response.cards))
-      .then((response) => {
-        this.setState(
-          (prevState) => ({
-            isLoading: false,
-            isRefreshing: false,
-            cards: [...prevState.cards, ...response],
-          }),
-        );
-      })
-      .catch((error) => {
-        // TODO: send the error to Sentry
-        // eslint-disable-next-line
-        console.log(error);
-      });
+
+    try {
+      const response = await fetch(`${API}cards?page=${page}&pageSize=${pageSize}&contains=imageUrl`);
+      const { cards } = await response.json();
+      this.saveCards(cards);
+    } catch (error) {
+      // TODO: send the error to Sentry
+      // eslint-disable-next-line
+      console.log(error);
+    }
+  }
+
+  /**
+   * Save cards into the state
+   *
+   * @param {object} cards - Cards data
+   */
+  saveCards(cards) {
+    this.setState(
+      (prevState) => ({
+        isLoading: false,
+        isRefreshing: false,
+        cards: [...prevState.cards, ...mapCards(cards)],
+      }),
+    );
   }
 
   render() {
