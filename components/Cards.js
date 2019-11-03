@@ -43,8 +43,8 @@ export default class Cards extends Component {
    * Fetch more cards
    */
   fetchMoreCards = () => {
-    const { refreshing } = this.state;
-    if (refreshing) {
+    const { isRefreshing } = this.state;
+    if (isRefreshing) {
       return null;
     }
 
